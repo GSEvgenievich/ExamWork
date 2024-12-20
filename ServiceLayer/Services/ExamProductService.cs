@@ -15,47 +15,91 @@ namespace ServiceLayer.Services
         }
         public async Task<List<ProductDTO>> GetProductsAsync(string subs, string? sortMethod, decimal minCost, decimal? maxCost, string manuf)//получение списка продуктов из БД с фильтрацией
         {
-            var productList = await _client.GetFromJsonAsync<IEnumerable<ProductDTO>>("ExamProducts");
-            productList = productList.Where(p => p.TotalCost >= minCost).Where(p => p.ProductName.ToLower().Contains(subs.ToLower()));
+            try
+            {
+                var productList = await _client.GetFromJsonAsync<IEnumerable<ProductDTO>>("ExamProducts");
+                productList = productList.Where(p => p.TotalCost >= minCost).Where(p => p.ProductName.ToLower().Contains(subs.ToLower()));
 
-            if (maxCost != null)
-            {
-                productList = productList.Where(p => p.TotalCost <= maxCost);
-            }
+                if (maxCost != null)
+                {
+                    productList = productList.Where(p => p.TotalCost <= maxCost);
+                }
 
-            if (!string.IsNullOrEmpty(manuf))
-            {
-                productList = productList.Where(p => p.ProductManufacturer == manuf);
-            }
+                if (!string.IsNullOrEmpty(manuf))
+                {
+                    productList = productList.Where(p => p.ProductManufacturer == manuf);
+                }
 
-            if (sortMethod == "asc")
-            {
-                return productList.OrderBy(x => x.TotalCost).ToList();
+                if (sortMethod == "asc")
+                {
+                    return productList.OrderBy(x => x.TotalCost).ToList();
+                }
+                else if (sortMethod == "desc")
+                {
+                    return productList.OrderByDescending(x => x.TotalCost).ToList();
+                }
+                return productList.ToList();
             }
-            else if (sortMethod == "desc")
+            catch (HttpRequestException ex)
             {
-                return productList.OrderByDescending(x => x.TotalCost).ToList();
+                throw new Exception("Ошибка получения всех товаров при выполнении запроса к API: " + ex.Message);
             }
-            return productList.ToList();
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<int> GetProductsCountAsync()
         {
-            var allProducts = await GetProductsAsync("", "", 0, null, "");
-            return allProducts.Count;
+            try
+            {
+                var allProducts = await GetProductsAsync("", "", 0, null, "");
+                return allProducts.Count;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception("Ошибка получения количества товаров при выполнении запроса к API: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<List<string>> GetManufacturersAsync()
         {
-            var manufacterers = await _client.GetFromJsonAsync<IEnumerable<ExamManufacturer>>("ExamManufacturers");
-            List<string> manufacturers = ["Все производители", .. manufacterers.Select(p => p.Name).Distinct().ToList()];
-            return manufacturers;
+            try
+            {
+                var manufacterers = await _client.GetFromJsonAsync<IEnumerable<ExamManufacturer>>("ExamManufacturers");
+                List<string> manufacturers = ["Все производители", .. manufacterers.Select(p => p.Name).Distinct().ToList()];
+                return manufacturers;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception("Ошибка получения производителей при выполнении запроса к API: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<string> GetProductNameByArticleAsync(string article)
         {
-            var manufacterers = await _client.GetFromJsonAsync<IEnumerable<ExamProduct>>("ExamProducts");
-            return manufacterers.Where(p => p.ProductArticleNumber == article).Select(p => p.ProductName).FirstOrDefault();
+            try
+            {
+                var manufacterers = await _client.GetFromJsonAsync<IEnumerable<ExamProduct>>("ExamProducts");
+                return manufacterers.Where(p => p.ProductArticleNumber == article).Select(p => p.ProductName).FirstOrDefault();
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception("Ошибка получения данных товара при выполнении запроса к API: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

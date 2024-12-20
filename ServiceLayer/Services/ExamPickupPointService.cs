@@ -15,7 +15,18 @@ namespace ServiceLayer.Services
 
         public async Task<List<ExamPickupPoint>?> GetPickupPointsAsync()//получение списка пунктов выдачи из БД
         {
-            return await _client.GetFromJsonAsync<List<ExamPickupPoint>>("ExamPickupPoints");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<ExamPickupPoint>>("ExamPickupPoints");
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception("Ошибка получения пунктов доставки при выполнении запроса к API: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

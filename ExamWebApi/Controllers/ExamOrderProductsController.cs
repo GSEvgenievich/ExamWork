@@ -42,34 +42,48 @@ namespace ExamWebApi.Controllers
         [HttpGet("{orderId}/summ")]
         public ActionResult<decimal?> GetSumOrder(int orderId)//получение суммы заказа
         {
-            if (!ExamOrderProductExists(orderId))
-                return NotFound();
-            return _context.ExamOrderProducts
-                .Include(eop => eop.ProductArticleNumberNavigation) // Включаем связанные ExamProducts
-                .Include(eop => eop.Order) // Включаем связанные ExamOrders
-                .Where(eop => eop.Order.OrderId == orderId)
-                .Select(eop => new
-                {
-                    Cost = eop.ProductArticleNumberNavigation.ProductCost * (100 - eop.ProductArticleNumberNavigation.ProductDiscountAmount) / 100 * eop.Amount
-                })
-                .Sum(x => x.Cost);
+            try
+            {
+                if (!ExamOrderProductExists(orderId))
+                    return NotFound();
+                return _context.ExamOrderProducts
+                    .Include(eop => eop.ProductArticleNumberNavigation) // Включаем связанные ExamProducts
+                    .Include(eop => eop.Order) // Включаем связанные ExamOrders
+                    .Where(eop => eop.Order.OrderId == orderId)
+                    .Select(eop => new
+                    {
+                        Cost = eop.ProductArticleNumberNavigation.ProductCost * (100 - eop.ProductArticleNumberNavigation.ProductDiscountAmount) / 100 * eop.Amount
+                    })
+                    .Sum(x => x.Cost);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Внутренняя ошибка сервера: " + ex.Message);
+            }
         }
 
         // GET: api/ExamOrderProducts/5/discount
         [HttpGet("{orderId}/discount")]
         public ActionResult<decimal?> GetDiscountOrder(int orderId)//получение скидки заказа
         {
-            if (!ExamOrderProductExists(orderId))
-                return NotFound();
-            return _context.ExamOrderProducts
-                .Include(eop => eop.ProductArticleNumberNavigation) // Включаем связанные ExamProducts
-                .Include(eop => eop.Order) // Включаем связанные ExamOrders
-                .Where(eop => eop.Order.OrderId == orderId)
-                .Select(eop => new
-                {
-                    Discount = (eop.ProductArticleNumberNavigation.ProductCost - eop.ProductArticleNumberNavigation.ProductCost * (100 - eop.ProductArticleNumberNavigation.ProductDiscountAmount) / 100) * eop.Amount
-                })
-                .Sum(x => x.Discount);
+            try
+            {
+                if (!ExamOrderProductExists(orderId))
+                    return NotFound();
+                return _context.ExamOrderProducts
+                    .Include(eop => eop.ProductArticleNumberNavigation) // Включаем связанные ExamProducts
+                    .Include(eop => eop.Order) // Включаем связанные ExamOrders
+                    .Where(eop => eop.Order.OrderId == orderId)
+                    .Select(eop => new
+                    {
+                        Discount = (eop.ProductArticleNumberNavigation.ProductCost - eop.ProductArticleNumberNavigation.ProductCost * (100 - eop.ProductArticleNumberNavigation.ProductDiscountAmount) / 100) * eop.Amount
+                    })
+                    .Sum(x => x.Discount);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Внутренняя ошибка сервера: " + ex.Message);
+            }
         }
 
         // PUT: api/ExamOrderProducts/5

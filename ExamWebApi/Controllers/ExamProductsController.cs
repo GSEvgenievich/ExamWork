@@ -16,26 +16,33 @@ namespace ExamWebApi.Controllers
         {
             _context = context;
         }
-
+       
         // GET: api/ExamProducts
         [HttpGet]
-        public async Task<IEnumerable<ProductDTO>> GetProductsAsync()//получение списка продуктов из БД с фильтрацией
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductsAsync()//получение списка продуктов из БД с фильтрацией
         {
-            return await _context.ExamProducts
-                .Select(prod => new ProductDTO
-                {
-                    ProductName = prod.ProductName,
-                    ProductArticleNumber = prod.ProductArticleNumber,
-                    ProductCategory = prod.ProductCategory,
-                    ProductPhoto = prod.ProductPhoto,
-                    ProductStatus = prod.ProductStatus,
-                    ProductDescription = prod.ProductDescription,
-                    ProductCost = prod.ProductCost,
-                    ProductDiscountAmount = prod.ProductDiscountAmount,
-                    ProductManufacturer = prod.Manufacturer.Name,
-                    ProductQuantityInStock = prod.ProductQuantityInStock,
-                    TotalCost = prod.ProductDiscountAmount.HasValue ? prod.ProductCost * (100 - prod.ProductDiscountAmount.Value) / 100 : prod.ProductCost
-                }).ToListAsync();
+            try
+            {
+                return await _context.ExamProducts
+                    .Select(prod => new ProductDTO
+                    {
+                        ProductName = prod.ProductName,
+                        ProductArticleNumber = prod.ProductArticleNumber,
+                        ProductCategory = prod.ProductCategory,
+                        ProductPhoto = prod.ProductPhoto,
+                        ProductStatus = prod.ProductStatus,
+                        ProductDescription = prod.ProductDescription,
+                        ProductCost = prod.ProductCost,
+                        ProductDiscountAmount = prod.ProductDiscountAmount,
+                        ProductManufacturer = prod.Manufacturer.Name,
+                        ProductQuantityInStock = prod.ProductQuantityInStock,
+                        TotalCost = prod.ProductDiscountAmount.HasValue ? prod.ProductCost * (100 - prod.ProductDiscountAmount.Value) / 100 : prod.ProductCost
+                    }).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Внутренняя ошибка сервера: " + ex.Message);
+            }
         }
 
         // GET: api/ExamProducts/5

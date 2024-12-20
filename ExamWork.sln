@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceLayer", "ServiceLaye
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamWebApi", "ExamWebApi\ExamWebApi.csproj", "{7F3B77E3-8103-4C1C-B9B0-42107D6F8D77}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceLayer_ORM", "ServiceLayer_ORM\ServiceLayer_ORM.csproj", "{29DD80EC-5DC5-45E0-B40A-57723D21DFAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{7F3B77E3-8103-4C1C-B9B0-42107D6F8D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F3B77E3-8103-4C1C-B9B0-42107D6F8D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F3B77E3-8103-4C1C-B9B0-42107D6F8D77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29DD80EC-5DC5-45E0-B40A-57723D21DFAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29DD80EC-5DC5-45E0-B40A-57723D21DFAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29DD80EC-5DC5-45E0-B40A-57723D21DFAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29DD80EC-5DC5-45E0-B40A-57723D21DFAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

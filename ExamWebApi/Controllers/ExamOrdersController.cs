@@ -42,51 +42,65 @@ namespace ExamWebApi.Controllers
         [HttpGet("{id}/TotalCost")]
         public async Task<ActionResult<OrderSummaryDTO>> GetOrderByIdWithTotalCostAsync(int id)//получение заказа из БД по id
         {
-            var order = await _context.ExamOrders.Include(p => p.ExamOrderProducts).ThenInclude(op => op.ProductArticleNumberNavigation)
-            .Select(g => new OrderSummaryDTO
+            try
             {
-                OrderID = g.OrderId,
-                UserID = g.UserId,
-                OrderStatus = g.OrderStatus,
-                OrderDate = g.OrderDate,
-                OrderDeliveryDate = g.OrderDeliveryDate,
-                OrderPickupPoint = g.OrderPickupPoint,
-                OrderPickupCode = g.OrderPickupCode,
-                TotalCost = g.ExamOrderProducts
-                    .Sum(op => op.ProductArticleNumberNavigation.ProductCost * (100 - op.ProductArticleNumberNavigation.ProductDiscountAmount) / 100 * op.Amount)
-            }).FirstOrDefaultAsync(g => g.OrderID == id);
+                var order = await _context.ExamOrders.Include(p => p.ExamOrderProducts).ThenInclude(op => op.ProductArticleNumberNavigation)
+                .Select(g => new OrderSummaryDTO
+                {
+                    OrderID = g.OrderId,
+                    UserID = g.UserId,
+                    OrderStatus = g.OrderStatus,
+                    OrderDate = g.OrderDate,
+                    OrderDeliveryDate = g.OrderDeliveryDate,
+                    OrderPickupPoint = g.OrderPickupPoint,
+                    OrderPickupCode = g.OrderPickupCode,
+                    TotalCost = g.ExamOrderProducts
+                        .Sum(op => op.ProductArticleNumberNavigation.ProductCost * (100 - op.ProductArticleNumberNavigation.ProductDiscountAmount) / 100 * op.Amount)
+                }).FirstOrDefaultAsync(g => g.OrderID == id);
 
-            if (order == null)
-            {
-                return NotFound();
+                if (order == null)
+                {
+                    return NotFound();
+                }
+
+                return order;
             }
-
-            return order;
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Внутренняя ошибка сервера: " + ex.Message);
+            }
         }
 
         // GET: api/ExamOrders/TotalCost
         [HttpGet("TotalCost")]
         public async Task<ActionResult<List<OrderSummaryDTO>>> GetOrdersAsync()//получение заказов
         {
-            var orders = await _context.ExamOrders.Include(p => p.ExamOrderProducts).ThenInclude(op => op.ProductArticleNumberNavigation)
-            .Select(g => new OrderSummaryDTO
+            try
             {
-                OrderID = g.OrderId,
-                UserID = g.UserId,
-                OrderStatus = g.OrderStatus,
-                OrderDate = g.OrderDate,
-                OrderDeliveryDate = g.OrderDeliveryDate,
-                OrderPickupPoint = g.OrderPickupPoint,
-                OrderPickupCode = g.OrderPickupCode,
-                TotalCost = g.ExamOrderProducts
-                    .Sum(op => op.ProductArticleNumberNavigation.ProductCost * (100 - op.ProductArticleNumberNavigation.ProductDiscountAmount) / 100 * op.Amount)
-            }).ToListAsync();
+                var orders = await _context.ExamOrders.Include(p => p.ExamOrderProducts).ThenInclude(op => op.ProductArticleNumberNavigation)
+                .Select(g => new OrderSummaryDTO
+                {
+                    OrderID = g.OrderId,
+                    UserID = g.UserId,
+                    OrderStatus = g.OrderStatus,
+                    OrderDate = g.OrderDate,
+                    OrderDeliveryDate = g.OrderDeliveryDate,
+                    OrderPickupPoint = g.OrderPickupPoint,
+                    OrderPickupCode = g.OrderPickupCode,
+                    TotalCost = g.ExamOrderProducts
+                        .Sum(op => op.ProductArticleNumberNavigation.ProductCost * (100 - op.ProductArticleNumberNavigation.ProductDiscountAmount) / 100 * op.Amount)
+                }).ToListAsync();
 
-            if (orders == null)
-            {
-                return NotFound();
+                if (orders == null)
+                {
+                    return NotFound();
+                }
+                return orders;
             }
-            return orders;
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Внутренняя ошибка сервера: " + ex.Message);
+            }
         }
 
         // PUT: api/ExamOrders/5

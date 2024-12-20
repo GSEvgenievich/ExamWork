@@ -14,26 +14,48 @@ namespace ServiceLayer.Services
         }
         public async Task<ExamUser?> GetUserByLoginAndPasswordAsync(string login, string password)
         {
-            var users = await _client.GetFromJsonAsync<IEnumerable<ExamUser>>("ExamUsers");
-            return users.FirstOrDefault(u => u.UserLogin == login && u.UserPassword == password);
+            try
+            {
+                var users = await _client.GetFromJsonAsync<IEnumerable<ExamUser>>("ExamUsers");
+                return users.FirstOrDefault(u => u.UserLogin == login && u.UserPassword == password);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception("Ошибка получения данных пользователя при выполнении запроса к API: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<string?> GetUserFullNameWithOrderIdAsync(int? orderId)
         {
-            var response = await _client.GetAsync($"ExamOrders/{orderId}");
-            response.EnsureSuccessStatusCode();
-            var order = await response.Content.ReadFromJsonAsync<ExamOrder>();
-
-            if (order.UserId != null)
+            try
             {
-                response = await _client.GetAsync($"ExamUsers/{order?.UserId}");
+                var response = await _client.GetAsync($"ExamOrders/{orderId}");
                 response.EnsureSuccessStatusCode();
-                var user = await response.Content.ReadFromJsonAsync<ExamUser>();
+                var order = await response.Content.ReadFromJsonAsync<ExamOrder>();
 
-                return $"{user.UserSurname} {user.UserName} {user.UserPatronymic}";
+                if (order.UserId != null)
+                {
+                    response = await _client.GetAsync($"ExamUsers/{order?.UserId}");
+                    response.EnsureSuccessStatusCode();
+                    var user = await response.Content.ReadFromJsonAsync<ExamUser>();
+
+                    return $"{user.UserSurname} {user.UserName} {user.UserPatronymic}";
+                }
+
+                return null;
             }
-
-            return null;
+            catch (HttpRequestException ex)
+            {
+                throw new Exception("Ошибка получения данных пользователя при выполнении запроса к API: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }
